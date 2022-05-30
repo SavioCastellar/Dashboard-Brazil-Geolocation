@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import date as dt, datetime
 from select import select
 import pandas as pd
 import psycopg2
@@ -23,10 +24,4 @@ date_picker_df = cur.fetchall()
 date_picker_df = pd.DataFrame(date_picker_df, columns=["date"])
 date_picker_df['date'] = date_picker_df['date'].astype(str)
 date_picker_df['date'] = date_picker_df['date'].str.slice(0,10)
-# date_picker_df = pd.to_datetime(date_picker_df['date'])
-# date_picker_df = pd.to_datetime(date_picker_df['date']).dt.date
 date_picker_df = date_picker_df.drop_duplicates(keep = 'first', inplace = False)
-# date_picker_df.set_index('date', inplace=True)
-# last_date = date_picker_df.last('1D')
-# print(last_date)
-# print(date_picker_df['date'])

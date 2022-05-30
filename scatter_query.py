@@ -29,13 +29,3 @@ scatter_df = cur.fetchall()
 scatter_df = pd.DataFrame(scatter_df, columns=["date", "latitude", "longitude","geoapi_id"])
 scatter_df['date'] = scatter_df['date'].astype(str)
 scatter_df['date'] = scatter_df['date'].str.slice(0,10)
-
-# value = date(2022, 2, 8)
-# print(value)
-# print(scatter_df)
-# scatter_df['date'] = scatter_df[scatter_df['date'] == value]
-
-# print(scatter_df)
-
-# range = input
-# data_frame3['date'] = data_frame3(data_frame3['date'] == range)

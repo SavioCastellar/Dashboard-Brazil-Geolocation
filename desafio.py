@@ -14,14 +14,14 @@ import json
 import psycopg2
 
 from choropleth_query import state_df
-from query2 import data_frame2
+from bar_graph_query import bar_graph_df
 from scatter_query import scatter_df
 from date_picker_query import date_picker_df
 
 ########### Tratamento dos dados ###########
 
 # Arquivo que fornece as fronteiras dos estados brasileiros
-geojson = json.load(open("Dashboard/json/brazil_geo.json", "r"))
+geojson = json.load(open("json/brazil_geo.json", "r"))
 
 # Dicionário {estado : geojson}
 dict_states={
@@ -55,7 +55,7 @@ fig.update_layout(
 )
 
 # Criação de um gráfico de barras
-fig2 = px.bar(data_frame2, x="state", y="quantities", color="geoapi_id", barmode="stack")
+fig2 = px.bar(bar_graph_df, x="state", y="quantities", color="geoapi_id", barmode="stack")
 fig2.update_layout(
     paper_bgcolor="#222222",
     autosize=True,
@@ -64,7 +64,7 @@ fig2.update_layout(
 )
 
 # Criação do mapa coroplético com pontos
-px.set_mapbox_access_token(open("python/.mapbox_token").read())
+px.set_mapbox_access_token(open(".mapbox_token").read())
 fig3 = px.scatter_mapbox(scatter_df,mapbox_style="carto-darkmatter",
                         lat= scatter_df["latitude"],
                         lon=scatter_df["longitude"],
@@ -77,7 +77,7 @@ fig3.update_layout(
     paper_bgcolor="#222222",
     autosize=True,
     margin=dict(l=0, r=0, t=0, b=0),
-    showlegend=False,
+    showlegend=True,
     font_color="#FFFFFF"
 )
 
@@ -90,9 +90,11 @@ app.layout = dbc.Container(
                 html.Div([
                     html.H4(children="Desafio Data Analytics TerraLAB"),
                 ], style={"background-color": "#222222", "margin-top": "30px", "margin-left":"20px"})
-            ], md=9),
+            ], md=7),
             dbc.Col([
-                html.P("Seleção de data:", style={"margin-top": "10px", "margin-right": "10px"}),
+                html.P("Seleção de data:", style={"margin-top": "25px", "margin-left": "80px"})
+            ], md=2),
+            dbc.Col([
                 html.Div(
                     className="div-for-dropdown",
                     id="div-test",
@@ -101,21 +103,23 @@ app.layout = dbc.Container(
                             id = "date-picker",
                             min_date_allowed=date(2022, 2, 8),
                             max_date_allowed=date(2022, 5, 26),
-                            date = date(2022, 5, 26),
-                            style={"margin-top": "-10px", "margin-right": "0px", "border": "0px solid black"})]
+                            date = date_picker_df["date"].unique(),
+                            style={"margin-top": "10px", "margin-left": "0px", "border": "0px solid black"})]
                 )
             ], md=3)
         ]),
         dbc.Row([
             dbc.Col([
+                html.P("Geolocalizações por estado", style={"color": "#B8B8B8","margin-top": "-10px", "margin-left": "0px", "margin-bottom": "5px"}),
                 dcc.Graph(id='choropleth-map',figure=fig, 
-                        style={'height': '90vh'})], md=6,style={
+                        style={'height': '80vh'})], md=6,style={
                           "padding": "25px",
                           "background-color": "#222222",
                           }),
             dbc.Col([
+                html.P("Localização das APIs", style={"color": "#B8B8B8", "margin-top": "-10px", "margin-left": "0px", "margin-bottom": "5px"}),
                 dcc.Graph(id='scatter-map',figure=fig3, 
-                        style={'height': '90vh'}),
+                        style={'height': '80vh'}),
             ], md=6,style={
                     "padding": "25px",
                     "background-color": "#222222",
@@ -137,62 +141,45 @@ app.layout = dbc.Container(
 )
 
 ########### Interação com o mapa ###########
-
-# Mudar o mapa a ser exibido de acordo com o estado que foi selecionado
-# @app.callback(
-#     Output('choropleth-map', 'figure'), # Id do mapa a ser mudado - atributo a ser mudado
-#     [Input('choropleth-map', 'clickData')]) # Usar o click no mapa como input
-
-# def exibe_mapa(value):
-#     # Variável para armazenar o nome do arquivo que tem "value" como chave
-#     archive = dict_states[value]
-
-#     # Criando um novo gráfico a partir do novo geojson
-#     fig = px.choropleth_mapbox(
-#    	    df2,
-#         mapbox_style="carto-positron",
-#         center={"lat": -16.95, "lon": -47.78},
-#         zoom=2.8,
-#         color_continuous_scale="teal",
-#         locations="state",
-#         color="quantities",
-#    		geojson=json.load(open("json/mg_geo.json", "r")))
-#     return fig
     
 # Mudar o gráfico de pontos a partir do date picker
-@app.callback(
-    Output("scatter-map", "figure"), # Id do gráfico - atributo a ser mudado
-    [Input("date-picker", "date")] # Usar o valor exibido no date picker como input
-)
-def update_scatter_mapbox(value):
+# @app.callback(
+#     [Output("scatter-map", "figure"),
+#     Output("choropleth-map", "figure"),
+#     Output("bar-graph", "figure")
+#      ]
+#       # Id do gráfico - atributo a ser mudado
+#     [Input("date-picker", "date")] # Usar o valor exibido no date picker como input
+# )
+# def update_scatter_mapbox(value):
 
-    # print(value)
-    # Response:
-    # 2022-05-10
+#     print(value)
+#     # Response:
+#     # 2022-05-10
 
-    # print(scatter_df[scatter_df['date'] == value])
-    # Response
-    # Empty DataFrame
-    # Columns: [date, latitude, longitude, geoapi_id]
-    # Index: []
+#     # print(scatter_df[scatter_df['date'] == value])
+#     # Response
+#     # Empty DataFrame
+#     # Columns: [date, latitude, longitude, geoapi_id]
+#     # Index: []
 
-    scatter_df['date'] = scatter_df[scatter_df['date'] == value]
+#     date = scatter_df[scatter_df['date'] == value]
 
-    # Atualizando o gráfico a partir da nova base de dados
-    fig3 = px.scatter_mapbox(scatter_df,mapbox_style="carto-darkmatter",
-                        lat= scatter_df["latitude"],
-                        lon=scatter_df["longitude"],
-                        color=scatter_df["geoapi_id"],
-                        center={"lat": -14.6633, "lon": -53.54627},
-                        zoom=3)
-    fig3.update_layout(
-        paper_bgcolor="#222222",
-        autosize=True,
-        margin=dict(l=0, r=0, t=0, b=0),
-        showlegend=False,
-        font_color="#FFFFFF"
-    )
-    return fig3
+#     # Atualizando o gráfico a partir da nova base de dados
+#     fig3 = px.scatter_mapbox(date,mapbox_style="carto-darkmatter",
+#                         lat= date["latitude"],
+#                         lon=date["longitude"],
+#                         color=date["geoapi_id"],
+#                         center={"lat": -14.6633, "lon": -53.54627},
+#                         zoom=3)
+#     fig3.update_layout(
+#         paper_bgcolor="#222222",
+#         autosize=True,
+#         margin=dict(l=0, r=0, t=0, b=0),
+#         showlegend=True,
+#         font_color="#FFFFFF"
+#     )
+#     return fig3
 
 ########### Rodar servidor de teste ###########
 
