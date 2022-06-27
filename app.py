@@ -24,24 +24,26 @@ from date_picker_query import date_picker_df
 geojson = json.load(open("json/brazil_geo.json", "r"))
 
 # Dicionário {estado : geojson}
-dict_states={
-    "MG":"mg_geo.json",
-    "DF":"brasilia_geo.json"
+dict_states = {
+    "MG": "mg_geo.json",
+    "DF": "brasilia_geo.json"
 }
 
 ########### Instanciando o Dash ###########
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY], prevent_initial_callbacks=True)
+app = dash.Dash(__name__, external_stylesheets=[
+                dbc.themes.DARKLY], prevent_initial_callbacks=True)
 
 # Criação do mapa coroplético
 fig = px.choropleth_mapbox(
-    state_df, # Base de dados para o gráfico
+    state_df,  # Base de dados para o gráfico
     mapbox_style="carto-darkmatter",
-    center={"lat": -14.6633, "lon": -53.54627}, # Posição para onde o zoom será direcionado
+    # Posição para onde o zoom será direcionado
+    center={"lat": -14.6633, "lon": -53.54627},
     zoom=3,
     color_continuous_scale="teal",
-    locations="state", # Coluna que faz match com o geojson
-    color="count", # Parâmetro que vai definir a intensidade da cor de cada estado
+    locations="state",  # Coluna que faz match com o geojson
+    color="count",  # Parâmetro que vai definir a intensidade da cor de cada estado
     geojson=geojson,
 )
 
@@ -55,7 +57,8 @@ fig.update_layout(
 )
 
 # Criação de um gráfico de barras
-fig2 = px.bar(bar_graph_df, x="state", y="quantities", color="geoapi_id", barmode="stack")
+fig2 = px.bar(bar_graph_df, x="state", y="quantities",
+              color="geoapi_id", barmode="stack")
 fig2.update_layout(
     paper_bgcolor="#222222",
     autosize=True,
@@ -65,12 +68,12 @@ fig2.update_layout(
 
 # Criação do mapa coroplético com pontos
 px.set_mapbox_access_token(open(".mapbox_token").read())
-fig3 = px.scatter_mapbox(scatter_df,mapbox_style="carto-darkmatter",
-                        lat= scatter_df["latitude"],
-                        lon=scatter_df["longitude"],
-                        color=scatter_df["geoapi_id"],
-                        center={"lat": -14.6633, "lon": -53.54627},
-                        zoom=3)
+fig3 = px.scatter_mapbox(scatter_df, mapbox_style="carto-darkmatter",
+                         lat=scatter_df["latitude"],
+                         lon=scatter_df["longitude"],
+                         color=scatter_df["geoapi_id"],
+                         center={"lat": -14.6633, "lon": -53.54627},
+                         zoom=3)
 
 # Atualizações de layout do mapa
 fig3.update_layout(
@@ -89,10 +92,11 @@ app.layout = dbc.Container(
             dbc.Col([
                 html.Div([
                     html.H4(children="Desafio Data Analytics TerraLAB"),
-                ], style={"background-color": "#222222", "margin-top": "30px", "margin-left":"20px"})
+                ], style={"background-color": "#222222", "margin-top": "30px", "margin-left": "20px"})
             ], md=7),
             dbc.Col([
-                html.P("Seleção de data:", style={"margin-top": "25px", "margin-left": "80px"})
+                html.P("Seleção de data:", style={
+                       "margin-top": "25px", "margin-left": "80px"})
             ], md=2),
             dbc.Col([
                 html.Div(
@@ -100,48 +104,51 @@ app.layout = dbc.Container(
                     id="div-test",
                     children=[
                         dcc.DatePickerSingle(
-                            id = "date-picker",
+                            id="date-picker",
                             min_date_allowed=date(2022, 2, 8),
                             max_date_allowed=date(2022, 5, 26),
-                            date = date_picker_df["date"].unique(),
+                            date=date_picker_df["date"].unique(),
                             style={"margin-top": "10px", "margin-left": "0px", "border": "0px solid black"})]
                 )
             ], md=3)
         ]),
         dbc.Row([
             dbc.Col([
-                html.P("Geolocalizações por estado", style={"color": "#B8B8B8","margin-top": "-10px", "margin-left": "0px", "margin-bottom": "5px"}),
-                dcc.Graph(id='choropleth-map',figure=fig, 
-                        style={'height': '80vh'})], md=6,style={
-                          "padding": "25px",
-                          "background-color": "#222222",
-                          }),
+                html.P("Geolocalizações por estado", style={
+                       "color": "#B8B8B8", "margin-top": "-10px", "margin-left": "0px", "margin-bottom": "5px"}),
+                dcc.Graph(id='choropleth-map', figure=fig,
+                          style={'height': '80vh'})], md=6, style={
+                "padding": "25px",
+                "background-color": "#222222",
+            }),
             dbc.Col([
-                html.P("Localização das APIs", style={"color": "#B8B8B8", "margin-top": "-10px", "margin-left": "0px", "margin-bottom": "5px"}),
-                dcc.Graph(id='scatter-map',figure=fig3, 
-                        style={'height': '80vh'}),
-            ], md=6,style={
-                    "padding": "25px",
-                    "background-color": "#222222",
-                    }
+                html.P("Localização das APIs", style={
+                       "color": "#B8B8B8", "margin-top": "-10px", "margin-left": "0px", "margin-bottom": "5px"}),
+                dcc.Graph(id='scatter-map', figure=fig3,
+                          style={'height': '80vh'}),
+            ], md=6, style={
+                "padding": "25px",
+                "background-color": "#222222",
+            }
             )
         ]),
         dbc.Row([
             html.Div([
-                html.P("Selecione que tipo de dado deseja visualizar:", style={"margin-top": "10px", "margin-left": "50px", "margin-bottom": "-15px"}),
+                html.P("Selecione que tipo de dado deseja visualizar:", style={
+                       "margin-top": "10px", "margin-left": "50px", "margin-bottom": "-15px"}),
                 dcc.Graph(
-                            id="bar-graph",
-                            figure=fig2, style={
-                            "background-color": "#222222",
-                            "padding": "40px",
-                            })
+                    id="bar-graph",
+                    figure=fig2, style={
+                        "background-color": "#222222",
+                        "padding": "40px",
+                    })
             ])
         ]),
     ], fluid=True
 )
 
 ########### Interação com o mapa ###########
-    
+
 # Mudar o gráfico de pontos a partir do date picker
 # @app.callback(
 #     [Output("scatter-map", "figure"),
@@ -184,4 +191,4 @@ app.layout = dbc.Container(
 ########### Rodar servidor de teste ###########
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
