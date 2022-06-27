@@ -1,0 +1,19 @@
+dash==2.3.1
+dash-bootstrap-components==1.1.0
+dash-core-components==2.0.0
+dash-html-components==2.0.0
+dash-table==5.0.0
+Fiona @ file:///C:/Users/vitor/pipwin/Fiona-1.8.21-cp39-cp39-win_amd64.whl
+Flask==2.1.1
+Flask-Compress==1.11
+GDAL @ file:///C:/Users/vitor/pipwin/GDAL-3.4.3-cp39-cp39-win_amd64.whl
+geopandas @ file:///C:/code/Dashboard/import/geopandas-0.10.2-py2.py3-none-any.whl
+gunicorn==20.1.0
+numpy @ file:///C:/Users/vitor/pipwin/numpy-1.22.4%2Bvanilla-cp39-cp39-win_amd64.whl
+pandas==1.4.2
+plotly==5.7.0
+psycopg2==2.9.3
+psycopg2-binary==2.9.3
+pyproj==3.3.1
+queuelib==1.6.2
+requests==2.27.1
